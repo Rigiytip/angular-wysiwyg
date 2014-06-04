@@ -261,10 +261,12 @@ angular.module('wysiwyg.module', ['colorpicker.module'])
 					if (input && input !== undefined)
 						scope.format('insertimage', input);
 				};
-				scope.imageUrl(setFunc)
-				//var input = prompt('Enter the image URL');
-				//if (input && input !== undefined)
-				//	scope.format('insertimage', input);
+				if(scope.imageUrl){
+					scope.imageUrl(setFunc)
+				}
+				else{
+					setFunc(prompt('Enter the image URL'));
+				}
 			}
 
 			scope.setFont = function(){

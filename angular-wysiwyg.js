@@ -257,7 +257,7 @@ angular.module('wysiwyg.module', ['colorpicker.module'])
 			}
 
 			scope.insertImage = function(){
-				var setFunc = function(url){
+				var setFunc = function(input){
 					if (input && input !== undefined)
 						scope.format('insertimage', input);
 				};

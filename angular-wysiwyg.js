@@ -74,6 +74,7 @@ angular.module('wysiwyg.module', ['colorpicker.module'])
       	restrict: 'E',
       	scope:{
 			value: '=ngModel',
+			imageUrl: '=imageUrl',
 			textareaHeight: '@textareaHeight',
 			textareaName: '@textareaName',
 			textareaPlaceholder: '@textareaPlaceholder',
@@ -256,9 +257,14 @@ angular.module('wysiwyg.module', ['colorpicker.module'])
 			}
 
 			scope.insertImage = function(){
-				var input = prompt('Enter the image URL');
-				if (input && input !== undefined)
-					scope.format('insertimage', input);
+				var setFunc = function(url){
+					if (input && input !== undefined)
+						scope.format('insertimage', input);
+				};
+				scope.imageUrl(setFunc)
+				//var input = prompt('Enter the image URL');
+				//if (input && input !== undefined)
+				//	scope.format('insertimage', input);
 			}
 
 			scope.setFont = function(){

@@ -69,25 +69,33 @@ angular.module('wysiwyg.module', ['colorpicker.module'])
 						'<button ng-show="isLink" tabindex="-1" title="Unlink" type="button" unselectable="on" class="btn btn-default" ng-click="format(\'unlink\')"><i class="fa fa-unlink"></i> </button>' +
 						'<button title="Image" tabindex="-1" type="button" unselectable="on" class="btn btn-default" ng-click="insertImage()"><i class="fa fa-picture-o"></i> </button>' +
 					'</div>' +
-	  				'<div id="{{textareaId}}" style="resize:vertical;height:{{textareaHeight || \'80px\'}}; overflow:auto" contentEditable="true" class="{{textareaClass}} wysiwyg-textarea" rows="{{textareaRows}}" name="{{textareaName}}" required="{{textareaRequired}}" placeholder="{{textareaPlaceholder}}" ng-model="value"></div>' +
+                    '<div class="btn-group btn-group-sm wysiwyg-btn-group-margin" ng-show="viewCode">' +
+                        '<button title="View html code" tabindex="-1" type="button" unselectable="on" class="btn btn-default" ng-click="changeViewCode()"><i class="fa fa-file-code-o"></i> </button>' +
+                    '</div>' +
+                    '<div id="{{textareaId}}" ng-show="stateViewCode==0" style="resize:vertical;height:{{textareaHeight || \'80px\'}}; overflow:auto" contentEditable="true" class="{{textareaClass}} wysiwyg-textarea" rows="{{textareaRows}}" name="{{textareaName}}" required="{{textareaRequired}}" placeholder="{{textareaPlaceholder}}" ng-model="value"></div>' +
+                    '<textarea id="{{textareaId}}-code" ng-show="stateViewCode==1 && viewCode" style="resize:vertical;height:{{textareaHeight || \'80px\'}}; overflow:auto" class="{{textareaClass}} wysiwyg-textarea" rows="{{textareaRows}}" name="{{textareaName}}" required="{{textareaRequired}}" placeholder="{{textareaPlaceholder}}" ng-model="value"></textarea>' +
   				'</div>',
       	restrict: 'E',
       	scope:{
 			value: '=ngModel',
-			imageUrl: '=imageUrl',
+            imageUrl: '=imageUrl',
 			textareaHeight: '@textareaHeight',
 			textareaName: '@textareaName',
 			textareaPlaceholder: '@textareaPlaceholder',
 			textareaClass: '@textareaClass',
 			textareaRequired: '@textareaRequired',
 			textareaId: '@textareaId',
+            viewCode: '@'
 		},
 		replace: true,
 		require: 'ngModel',
 		link: function (scope, element, attrs, ngModelController) {
-      		
-      		var textarea = element.find('div.wysiwyg-textarea');
-	       	
+
+            var textarea = element.find('div.wysiwyg-textarea');
+            var textarea2 = element.find('textarea.wysiwyg-textarea');
+
+            scope.stateViewCode = 0;
+
 	       	scope.fonts = [
 				'Georgia',
 				'Palatino Linotype',
@@ -146,6 +154,7 @@ angular.module('wysiwyg.module', ['colorpicker.module'])
 
 
 	    	textarea.on('keyup mouseup', function () {
+                console.log('changed div');
 	     	 	scope.$apply(function readViewText() {
 					var html = textarea.html();
 
@@ -155,8 +164,17 @@ angular.module('wysiwyg.module', ['colorpicker.module'])
 
 					ngModelController.$setViewValue(html);
 				});
-	      	}); 
-	      	scope.isLink = false;
+	      	});
+
+            textarea2.on('keyup mouseup', function () {
+                scope.$apply(function readViewText() {
+                    var html = textarea2.val();
+                    ngModelController.$setViewValue(html);
+                });
+            });
+
+
+            scope.isLink = false;
 
 
 	      	//Used to detect things like A tags and others that dont work with cmdValue().
@@ -236,6 +254,7 @@ angular.module('wysiwyg.module', ['colorpicker.module'])
 			// model -> view
 	        ngModelController.$render = function () {
 	            textarea.html(ngModelController.$viewValue);
+                textarea2.html(ngModelController.$viewValue);
 	        };
 
 			scope.format = function(cmd, arg){
@@ -250,6 +269,10 @@ angular.module('wysiwyg.module', ['colorpicker.module'])
 				return document.queryCommandValue(cmd);
 			}
 
+            scope.changeViewCode = function(){
+                scope.stateViewCode = scope.stateViewCode==0?1:0;
+            }
+
 			scope.createLink = function(){
 				var input = prompt('Enter the link URL');
 				if (input && input !== undefined)
@@ -261,6 +284,9 @@ angular.module('wysiwyg.module', ['colorpicker.module'])
 					if (input && input !== undefined)
 						scope.format('insertimage', input);
 				};
+
+                console.log(scope.imageUrl);
+
 				if(scope.imageUrl){
 					scope.imageUrl(setFunc)
 				}

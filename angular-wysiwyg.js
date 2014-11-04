@@ -17,7 +17,7 @@ Requires:
 */
 
 angular.module('wysiwyg.module', ['colorpicker.module'])
-  .directive('wysiwyg', function ($timeout) {
+  .directive('wysiwyg', ['$timeout',function ($timeout) {
     return {
       	template: '<div>' +				
 					'<style>' +
@@ -315,4 +315,4 @@ angular.module('wysiwyg.module', ['colorpicker.module'])
 			scope.format('styleWithCSS', true);
         }
     };
-});
+}]);
